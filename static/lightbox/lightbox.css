@@ -1,0 +1,43 @@
+.gallery a {
+  display: inline-block;
+  margin: 5px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  transition: 0.3s;
+}
+
+.gallery a:hover {
+  border: 2px solid #777;
+}
+
+.gallery img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.gallery img:hover {
+  transform: scale(1.05);
+}
+
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lightbox-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+}

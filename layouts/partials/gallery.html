@@ -1,7 +1,7 @@
 <section class="gallery">
-  <div id="gallery" style="visibility: hidden; height: 1px; overflow: hidden">
     {{ $images := slice }}
-    {{ range $image := where (.Resources.ByType "image") "Params.hidden" "ne" true }}
+    {{ $allImages := .Resources.ByType "image" }}
+    {{ range $image := where (.Resources.Match "thumb-*") "Params.hidden" "ne" true }}
       {{ $title := "" }}
       {{ $date := "" }}
       {{ with $image.Exif }}
@@ -29,22 +29,18 @@
       }}
     {{ end }}
     {{ $publishResources := default true .Params.build.publishResources }}
-    {{ range sort $images (.Params.sort_by | default "Name") (.Params.sort_order | default "asc") }}
+  <div id="gallery-grid">
+    {{ range sort $images (.Params.sort_by | default "Name") (.Params.sort_order | default "desc") }}
       {{ $image := .image }}
       {{ $thumbnail := $image.Filter (slice images.AutoOrient (images.Process "fit 600x600")) }}
-      {{ $full := $image.Filter (slice images.AutoOrient (images.Process "fit 1600x1600")) }}
+      {{ $base := replace $image.Name "thumb-" "" }}
+      {{ $full := $allImages.GetMatch $base}}
+      {{ $full := $full.Filter (slice images.AutoOrient (images.Process "fit 1600x1600")) }}
       {{ $color := index $thumbnail.Colors 0 | default "transparent" }}
-      <a class="gallery-item" href="{{ if $publishResources }}{{ $image.RelPermalink }}{{ else }}{{ $full.RelPermalink }}{{ end }}" data-pswp-src="{{ $full.RelPermalink }}" data-pswp-width="{{ $full.Width }}" data-pswp-height="{{ $full.Height }}" data-pswp-target="{{ $image.Name | urlize }}" title="{{ .Title }}" itemscope itemtype="https://schema.org/ImageObject" style="aspect-ratio: {{ $thumbnail.Width }} / {{ $thumbnail.Height }}">
-        <figure style="background-color: {{ $color }}; aspect-ratio: {{ $thumbnail.Width }} / {{ $thumbnail.Height }}">
-          <img class="lazyload" width="{{ $thumbnail.Width }}" height="{{ $thumbnail.Height }}" data-src="{{ $thumbnail.RelPermalink }}" alt="{{ .Title }}" />
-        </figure>
-        <meta itemprop="contentUrl" content="{{ if $publishResources }}{{ $image.RelPermalink }}{{ else }}{{ $full.RelPermalink }}{{ end }}" />
-        {{ with site.Params.Author }}
-          <span itemprop="creator" itemtype="https://schema.org/Person" itemscope>
-            <meta itemprop="name" content="{{ site.Params.Author.name }}" />
-          </span>
-        {{ end }}
+      <a class="gallary-item" href="{{ $full.RelPermalink }}" data-lightbox="gallery" data-title="{{ .Title }}">
+       <img src="{{ $thumbnail.RelPermalink }}" alt="{{ .Title }}" width="{{ $thumbnail.Width }}" height="{{ $thumbnail.Height }}" />
       </a>
     {{ end }}
   </div>
+<script src="/lightbox/lightbox.js" defer></script>
 </section>
